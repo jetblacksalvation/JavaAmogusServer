@@ -1,16 +1,11 @@
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map;
 
 public class Routs 
 {
@@ -25,13 +20,12 @@ public class Routs
                 //i wrote this high it, this code sucks vvv 
                 //System.out.println(fileEntry.getName()+", "+((fileEntry.getName().indexOf('.')>0)?routeName+fileEntry.getName().substring(0,fileEntry.getName().indexOf('.')):routeName+fileEntry.getName())+'/' );
                 listFilesForFolder(fileEntry,routeName+fileEntry.getName()+'/');
-            } 
+            }
             else if(fileEntry.isFile()) {
-                
                 try
                 {
-                    _routingMap.put(routeName, new FileReader(fileEntry));
-                    System.out.println("PUT "+routeName +" : "+fileEntry);
+                    _routingMap.put(fileEntry.getPath().replace("wwwroot\\",""), new FileReader(fileEntry));
+                    System.out.println("PUT "+fileEntry.getPath().replace("wwwroot\\","")+" : "+fileEntry);
                 }
                 catch(Exception E)
                 {
@@ -41,6 +35,22 @@ public class Routs
                 System.out.println(fileEntry.getName()+", "+routeName+fileEntry.getName() );
             }
         }
+    }
+    public void setErrorPage(String route)
+    {
+        Set<Map.Entry<String, FileReader>> entries = _routingMap.entrySet();
+        for(Map.Entry<String,FileReader> entry : entries)
+        {
+            if(entry.getKey() == route)
+            {
+                _errorPage = entry;
+            }
+        }
+
+    }
+    public void writeErrorContent(OutputStream stream)
+    {
+        _errorPage.getValue();
     }
     public void writeRouteContent(String route, OutputStream stream)
     {
@@ -65,10 +75,12 @@ public class Routs
         }
         catch (Exception E)
         {
+            System.out.println("SOME FUCKERYSFDFKDSFKSL : "+E);
 
         }
         
     }
-    public HashMap<String,FileReader> _routingMap=new HashMap<>();
+    public HashMap<String,FileReader> _routingMap= new HashMap<>();
+    public Map.Entry<String, FileReader> _errorPage;
 
 }

@@ -22,23 +22,35 @@ class Sockets
             
             ServerSocket serverSocket = new ServerSocket(80,50,localHost);
             System.out.println("http://"+serverSocket.getInetAddress()+" is the server localhost!");
-            Socket clientSock = serverSocket.accept();
-            int requestSize = clientSock.getReceiveBufferSize();
-            clientSock.setReceiveBufferSize(requestSize);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(clientSock.getInputStream(), "UTF-8"));
-            
-            routs.writeRouteContent("/", clientSock.getOutputStream());
-            ArrayList<String> headers = new ArrayList<>();
-            String line;
-            while ((line = reader.readLine()) != null && !line.isEmpty()) 
+            while(true)
             {
-                headers.add(line);
+                Socket clientSock = serverSocket.accept();
+
+                int requestSize = clientSock.getReceiveBufferSize();
+                clientSock.setReceiveBufferSize(requestSize);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(clientSock.getInputStream(), "UTF-8"));
+                
+                ArrayList<String> headers = new ArrayList<>();
+                String line;
+                while ((line = reader.readLine()) != null && !line.isEmpty()) 
+                {
+                    if(line.contains("favicon.ico"))
+                    {
+                        System.out.println("sent favicon.ico");
+                        routs.writeRouteContent("favicon.ico", clientSock.getOutputStream());
+                        clientSock.close();
+                        continue;
+                    }
+                    headers.add(line);
+                }
+                
+                System.out.println(headers);
+                routs.writeRouteContent("/home.html", clientSock.getOutputStream());
+                System.out.println("Wrote Content to socket");
+                clientSock.close();
+                
+
             }
-            
-            System.out.println(headers);
-        
-            clientSock.close();
-            
 
         }
         catch(Exception e)
