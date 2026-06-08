@@ -22,10 +22,11 @@ public class Routs
                 listFilesForFolder(fileEntry,routeName+fileEntry.getName()+'/');
             }
             else if(fileEntry.isFile()) {
+                String fixedPathStr = fixPath(fileEntry.getPath());
                 try
                 {
-                    _routingMap.put(fileEntry.getPath().replace("wwwroot\\",""), new FileReader(fileEntry));
-                    System.out.println("PUT "+fileEntry.getPath().replace("wwwroot\\","")+" : "+fileEntry);
+                    _routingMap.put(fixedPathStr, new FileReader(fileEntry));
+                    System.out.println("PUT "+fixedPathStr+" : "+fileEntry);
                 }
                 catch(Exception E)
                 {
@@ -35,6 +36,22 @@ public class Routs
                 System.out.println(fileEntry.getName()+", "+routeName+fileEntry.getName() );
             }
         }
+    }
+        public String fixPath(String route)
+    {
+        String buffRoute = "";
+        if(route.startsWith(".\\"))
+        {
+            buffRoute = route.substring(1,route.length());
+        }
+        else
+        {
+            buffRoute = route;
+        }
+        
+        buffRoute = buffRoute.replace("\\", "/").replace("/wwwroot","");
+        return buffRoute;
+
     }
     public void setErrorPage(String route)
     {
@@ -56,7 +73,7 @@ public class Routs
     {
         if(_routingMap.get(route) == null)
         {
-            System.out.println("invlaid route bud..."+route);
+            System.out.println("invlaid route bud : "+route);
         }
         BufferedReader fileReader = new BufferedReader(_routingMap.get(route));
         try

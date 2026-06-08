@@ -1,11 +1,9 @@
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Map;
 
 
 
@@ -21,7 +19,7 @@ class Sockets
             InetAddress localHost = InetAddress.getLocalHost();
             
             ServerSocket serverSocket = new ServerSocket(80,50,localHost);
-            System.out.println("http://"+serverSocket.getInetAddress()+" is the server localhost!");
+            System.out.println("http://"+serverSocket.getInetAddress().getHostAddress()+" is the server localhost!");
             while(true)
             {
                 Socket clientSock = serverSocket.accept();
@@ -34,11 +32,11 @@ class Sockets
                 String line;
                 while ((line = reader.readLine()) != null && !line.isEmpty()) 
                 {
-                    if(line.contains("favicon.ico"))
+                    if(line.contains("/favicon.ico"))
                     {
                         System.out.println("sent favicon.ico");
-                        routs.writeRouteContent("favicon.ico", clientSock.getOutputStream());
-                        clientSock.close();
+                        routs.writeRouteContent("/favicon.ico", clientSock.getOutputStream());
+                        // clientSock.close(); //web browser wants the connection not to be closed prob
                         continue;
                     }
                     headers.add(line);
