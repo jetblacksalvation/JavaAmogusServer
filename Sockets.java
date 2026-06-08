@@ -46,7 +46,7 @@ class Sockets
                 routs.writeRouteContent("/home.html", clientSock.getOutputStream());
                 System.out.println("Wrote Content to socket");
                 clientSock.close();
-                
+
 
             }
 
